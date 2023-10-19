@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Check for airmon-ng dependency
+if ! command_exists airmon-ng; then
+    echo "The 'airmon-ng' command is not found. Please install 'aircrack-ng' to continue."
+    echo "Do you want to install 'aircrack-ng' now? (y/n)"
+    read install_choice
+
+    if [ "$install_choice" = "y" ] || [ "$install_choice" = "Y" ]; then
+        sudo apt-get update
+        sudo apt-get install aircrack-ng
+    else
+        echo "Cannot proceed without 'aircrack-ng'. Exiting."
+        exit 1
+    fi
+fi
+
+# Function to enable monitor mode
+enable_monitor_mode() {
+    echo "Enter the name of the wireless interface you want to enable monitor mode for:"
+    read interface
+
+    # Check if the interface exists
+    if [[ -d /sys/class/net/$interface ]]; then
+        echo "Enabling monitor mode for $interface..."
+        sudo airmon-ng start $interface
+    else
+        echo "The interface $interface does not exist."
+    fi
+}
+
+# Function to disable monitor mode
+disable_monitor_mode() {
+    echo "Enter the name of the wireless interface in monitor mode you want to disable:"
+    read interface
+
+    # Check if the interface is in monitor mode
+    if [[ -d /sys/class/net/$interface ]]; then
+        if [[ $(iwconfig $interface | grep -o "Mode:Monitor") == "Mode:Monitor" ]]; then
+            echo "Disabling monitor mode for $interface..."
+            sudo airmon-ng stop $interface
+        else
+            echo "$interface is not in monitor mode."
+        fi
+    else
+        echo "The interface $interface does not exist."
+    fi
+}
+
+# Main menu
+echo "Monitor Mode Control Script"
+echo "1. Enable Monitor Mode"
+echo "2. Disable Monitor Mode"
+echo "3. Quit"
+
+read choice
+
+case $choice in
+    1)
+        enable_monitor_mode
+        ;;
+    2)
+        disable_monitor_mode
+        ;;
+    3)
+        echo "Exiting the script."
+        ;;
+    *)
+        echo "Invalid choice. Please enter 1, 2, or 3."
+        ;;
+esac
