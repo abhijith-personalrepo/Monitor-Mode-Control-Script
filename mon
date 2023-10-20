@@ -1,11 +1,8 @@
 #!/bin/bash
-
-# Function to check if a command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
-
-# Check for airmon-ng dependency
+#airmon check
 if ! command_exists airmon-ng; then
     echo "The 'airmon-ng' command is not found. Please install 'aircrack-ng' to continue."
     echo "Do you want to install 'aircrack-ng' now? (y/n)"
@@ -20,7 +17,6 @@ if ! command_exists airmon-ng; then
     fi
 fi
 
-# Function to enable monitor mode
 enable_monitor_mode() {
     echo "Enter the name of the wireless interface you want to enable monitor mode for:"
     read interface
@@ -34,7 +30,6 @@ enable_monitor_mode() {
     fi
 }
 
-# Function to disable monitor mode
 disable_monitor_mode() {
     echo "Enter the name of the wireless interface in monitor mode you want to disable:"
     read interface
@@ -52,7 +47,7 @@ disable_monitor_mode() {
     fi
 }
 
-# Main menu
+# menu
 echo "Monitor Mode Control Script"
 echo "1. Enable Monitor Mode"
 echo "2. Disable Monitor Mode"
